@@ -311,6 +311,14 @@ class Transaction
     }
 
     /**
+     * Get a buffer of the Transaction data that need to be covered by signatures
+     */
+    public function base64EncodeMessage(): string
+    {
+        return base64_encode($this->compileMessage()->serialize());
+    }
+
+    /**
      * Specify the public keys which will be used to sign the Transaction.
      * The first signer will be used as the transaction fee payer account.
      *

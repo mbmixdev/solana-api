@@ -46,7 +46,7 @@ class Connection extends Program
      * @param string $transactionSignature
      * @return array
      */
-    public function getTransaction(string $transactionSignature): array
+    public function getTransaction(string $transactionSignature): ?array
     {
         return $this->client->call('getTransaction', [$transactionSignature]);
     }
@@ -59,6 +59,64 @@ class Connection extends Program
     public function getRecentBlockhash(?Commitment $commitment = null): array
     {
         return $this->client->call('getRecentBlockhash', array_filter([$commitment]))['value'];
+    }
+
+
+    /**
+     * @param Commitment|null $commitment
+     * @return array
+     * @throws Exceptions\GenericException|Exceptions\MethodNotFoundException|Exceptions\InvalidIdResponseException
+     */
+    public function getBlockHeight()
+    {
+        return $this->client->call('getBlockHeight');
+    }
+
+    /**
+     * @param Commitment|null $commitment
+     * @return array
+     * @throws Exceptions\GenericException|Exceptions\MethodNotFoundException|Exceptions\InvalidIdResponseException
+     */
+    public function getBlockBySlotNumber(int $blockNumber, string $transactionDetails = 'full')
+    {
+        return $this->client->call('getBlock', [$blockNumber,
+          [
+            "encoding" => "jsonParsed",
+            "transactionDetails" => $transactionDetails,
+            "rewards" => false
+          ]
+        ]);
+    }
+
+/**
+     * @param Commitment|null $commitment
+     * @return array
+     * @throws Exceptions\GenericException|Exceptions\MethodNotFoundException|Exceptions\InvalidIdResponseException
+     */
+    public function getLatestBlockhash(string $commitment = 'processed')
+    {
+        return $this->client->call('getLatestBlockhash', [
+          [
+            "commitment" => $commitment,
+          ]
+        ]);
+    }
+
+    /**
+     * @param Commitment|null $commitment
+     * @return array
+     * @throws Exceptions\GenericException|Exceptions\MethodNotFoundException|Exceptions\InvalidIdResponseException
+     */
+    public function getBlocks(int $slot)
+    {
+        return $this->client->call('getBlocks', [$slot]);
+    }
+
+
+    public function getBlocksWithLimit(int $slot)
+    {
+        $limit = 10;
+        return $this->client->call('getBlocksWithLimit', [$slot, $limit]);
     }
 
     /**
@@ -87,6 +145,25 @@ class Connection extends Program
             [
                 'encoding' => 'base64',
                 'preflightCommitment' => 'confirmed',
+            ],
+        ]);
+    }
+
+
+  /**
+   * @param string $message
+   * @return float
+   * @throws Exceptions\GenericException
+   * @throws Exceptions\InvalidIdResponseException
+   * @throws Exceptions\MethodNotFoundException
+   * @throws \SodiumException
+   */
+  public function getFeeForMessage(string $message, string $commitment = 'processed')
+    {
+        return $this->client->call('getFeeForMessage', [
+          $message,
+            [
+                'commitment' => $commitment
             ],
         ]);
     }
