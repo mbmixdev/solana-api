@@ -37,14 +37,18 @@ class SolanaRpcClient
 
     protected $endpoint;
     protected $randomKey;
+    private $username;
+    private $password;
 
     /**
      * @param string $endpoint
      * @throws \Exception
      */
-    public function __construct(string $endpoint)
+    public function __construct(string $endpoint, string $username, string $password)
     {
         $this->endpoint = $endpoint;
+        $this->username = $username;
+        $this->password = $password;
         $this->randomKey = random_int(0, 99999999);
     }
 
@@ -59,7 +63,11 @@ class SolanaRpcClient
      */
     public function call(string $method, array $params = [], array $headers = [])
     {
-        $response = (new HttpFactory())->acceptJson()->withHeaders($headers)->post(
+        $response = (new HttpFactory())
+            ->acceptJson()
+            ->withHeaders($headers)
+            ->withBasicAuth($this->username, $this->password)
+            ->post(
             $this->endpoint,
             $this->buildRpc($method, $params)
         )->throw();
