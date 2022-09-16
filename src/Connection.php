@@ -77,11 +77,11 @@ class Connection extends Program
      * @return array
      * @throws Exceptions\GenericException|Exceptions\MethodNotFoundException|Exceptions\InvalidIdResponseException
      */
-    public function getBlockBySlotNumber(int $blockNumber, string $transactionDetails = 'full')
+    public function getBlockBySlotNumber(int $blockNumber, string $encoding = "base64", string $transactionDetails = 'full')
     {
         return $this->client->call('getBlock', [$blockNumber,
           [
-            "encoding" => "jsonParsed",
+            "encoding" => $encoding,
             "transactionDetails" => $transactionDetails,
             "rewards" => false
           ]
