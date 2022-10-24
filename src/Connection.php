@@ -48,7 +48,11 @@ class Connection extends Program
      */
     public function getTransaction(string $transactionSignature): ?array
     {
-        return $this->client->call('getTransaction', [$transactionSignature]);
+        return $this->client->call('getTransaction', [$transactionSignature,
+            [
+                "maxSupportedTransactionVersion" => 0
+            ]
+        ]);
     }
 
     /**
@@ -77,13 +81,17 @@ class Connection extends Program
      * @return array
      * @throws Exceptions\GenericException|Exceptions\MethodNotFoundException|Exceptions\InvalidIdResponseException
      */
-    public function getBlockBySlotNumber(int $blockNumber, string $encoding = "base64", string $transactionDetails = 'full')
-    {
+    public function getBlockBySlotNumber(
+        int $blockNumber,
+        string $encoding = "base64",
+        string $transactionDetails = 'full'
+    ) {
         return $this->client->call('getBlock', [$blockNumber,
           [
             "encoding" => $encoding,
             "transactionDetails" => $transactionDetails,
-            "rewards" => false
+            "rewards" => false,
+            "maxSupportedTransactionVersion" => 0
           ]
         ]);
     }
